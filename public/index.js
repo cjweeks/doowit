@@ -1,4 +1,17 @@
 
+
+
+Date.prototype.yyyymmdd = function() {
+    var mm = this.getMonth() + 1;
+    var dd = this.getDate();
+
+    return [
+        this.getFullYear(),
+        (mm > 9 ? '' : '0') + mm,
+        (dd > 9 ? '' : '0') + dd
+    ].join('');
+};
+
 function renderTasks(tasks) {
     console.log(tasks);
     if (!tasks.length) {
@@ -35,7 +48,7 @@ function renderTasks(tasks) {
             '<input type="checkbox" autocomplete="off" class="task-checkbox">' +
             '<span class="glyphicon glyphicon-ok"></span></label></div>';
         var data = '<span class="task-text">' + tasks[i].text +
-            '<span class="text-muted date"> &ndash; ' + tasks[i].date +'</span></span>';
+            '<span class="text-muted date"> &ndash; ' + new Date(tasks[i].date).toDateString() +'</span></span>';
 
         var footer = '<div class="delete-task-btn-container">' +
             '<button type="button" class="close remove-task-btn" aria-label="Delete Task">' +
@@ -44,7 +57,7 @@ function renderTasks(tasks) {
             '</div>' +
             '</li>';
 
-        $('#tasks').append(header + data + footer);
+        $('#tasks').prepend(header + data + footer);
     }
 }
 
@@ -72,7 +85,7 @@ $(document).ready(function () {
 
         socket.emit('add-task', {
             text: document.getElementById('task-description').value,
-            date: new Date().toDateString()
+            date: new Date().yyyymmdd()
         })
     });
 
