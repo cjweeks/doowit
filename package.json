@@ -1,0 +1,15 @@
+{
+  "name": "doowit",
+  "version": "0.0.1",
+  "description": "Simple Personal Todo App",
+  "author": "Connor Weeks",
+  "private": true,
+  "scripts": {
+    "start": "node app.js"
+  },
+  "dependencies": {
+    "express": "^4.14.0",
+    "node-mysql": "^0.4.2",
+    "socket.io": "^1.7.2"
+  }
+}
