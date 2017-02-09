@@ -86,7 +86,12 @@ $(document).ready(function () {
         socket.emit('add-task', {
             text: document.getElementById('task-description').value,
             date: new Date().yyyymmdd()
-        })
+        });
+        document.getElementById('task-description').value = '';
+
+        if (!$('#keep-modal-open').checked) {
+            $('#add-task-modal').modal('hide');
+        }
     });
 
     // send post request for new song
@@ -114,6 +119,17 @@ $(document).ready(function () {
                 taskId: taskId,
                 completed: !state
             });
+        }
+    });
+
+    $('#add-task-btn').click(function (event) {
+        $('#add-task-modal').modal('show');
+    });
+
+    $(document).keydown(function (event) {
+        var showModalKey = 78; // 'n' key
+        if (event.shiftKey && event.which == showModalKey) {
+            $('#add-task-modal').modal('show');
         }
     });
 });

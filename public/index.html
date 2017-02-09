@@ -57,7 +57,7 @@
         <div class="col-sm-3"></div>
         <div class="col-sm-6">
             <div id="add-task">
-                <button id="add-task-btn" data-toggle="modal" data-target="#add-task-modal">
+                <button id="add-task-btn">
                     <i class="glyphicon glyphicon-plus"></i>
                 </button>
             </div>
@@ -79,7 +79,8 @@
         <div class="col-sm-3"></div>
     </div>
 </div>
-<!-- Modal -->
+
+<!-- Add TaskModal -->
 <div class="modal fade" id="add-task-modal" tabindex="-1" role="dialog" aria-labelledby="add-task-modal-label" aria-hidden="true">
     <div class="modal-dialog">
         <div class="modal-content">
@@ -96,24 +97,21 @@
 
             <!-- Modal Body -->
             <div class="modal-body">
-
                 <form role="form">
                     <div class="form-group">
                         <input type="text" class="form-control" autofocus id="task-description" placeholder="Task description"/>
                     </div>
                     <div class="checkbox">
-                        <label><input type="checkbox" value="" checked>Keep this window open</label>
+                        <label><input type="checkbox" value="" checked id="keep-modal-open">Keep this window open</label>
                     </div>
                     <button type="submit" class="btn btn-default" id="add-task-submit-btn">Add</button>
                     <!--<button type="submit" class="btn btn-default btn-block" id="add-task-submit-btn">Add</button>-->
                 </form>
-
-
             </div>
 
-            <div class="modal-footer">
-                <button type="button" class="btn btn-default">Exit</button>
-            </div>
+            <!--<div class="modal-footer">-->
+                <!--<button type="button" class="btn btn-default">Exit</button>-->
+            <!--</div>-->
         </div>
     </div>
 </div>

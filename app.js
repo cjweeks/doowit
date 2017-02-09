@@ -32,7 +32,7 @@ function sendTasks(clientSocket, error) {
             if (error) {
                 throw error;
             }
-            console.log('The numbe returned is ' + result[0].numTasks);
+            console.log('The number returned is ' + result[0].numTasks);
             var numTasks = Math.max(result[0].numTasks, MIN_DISPLAY_TASKS);
             databaseOperation(
                 clientSocket,
