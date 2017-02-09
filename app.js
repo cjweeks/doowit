@@ -8,44 +8,13 @@ var MIN_DISPLAY_TASKS = 18;
 var mysql = require('mysql');
 
 var pool = mysql.createPool({
-    connectionLimit : 100, //important
+    connectionLimit: 50,
     host: 'localhost',
     user: 'root',
     password: 'testpassword',
     database: 'doowit',
-    debug:  false
+    debug: false
 });
-
-
-function sendTasks(clientSocket, error) {
-    if (error) {
-        throw error;
-    }
-    databaseOperation(
-        clientSocket,
-
-        'select count(*) as numTasks from ' +
-        '(select * from tasks where taskId >=' +
-        '(select min(taskId) from tasks where completed = 0)) as T',
-        '',
-        function (clientSocket, error, result) {
-            if (error) {
-                throw error;
-            }
-            console.log('The number returned is ' + result[0].numTasks);
-            var numTasks = Math.max(result[0].numTasks, MIN_DISPLAY_TASKS);
-            databaseOperation(
-                clientSocket,
-                'select * from (select * from tasks order by taskId desc limit ?) limited order by taskId',
-                [numTasks],
-                function (clientSocket, error, tasks) {
-                    if (error) {
-                        throw error;
-                    }
-                    clientSocket.emit('server-update', tasks);
-                });
-        });
-}
 
 function databaseOperation(clientSocket, queryString, args, callback) {
     callback = callback || function () {};
@@ -53,7 +22,6 @@ function databaseOperation(clientSocket, queryString, args, callback) {
         if (error) {
             throw error;
         }
-        //console.log(queryString, args);
         connection.query(queryString, args, function(error, response){
             connection.release();
             callback(clientSocket, error, response);
@@ -65,6 +33,35 @@ function databaseOperation(clientSocket, queryString, args, callback) {
     });
 }
 
+function sendTasks(clientSocket, error) {
+    if (error) {
+        throw error;
+    }
+    databaseOperation(
+        clientSocket,
+        'select count(*) as numTasks from ' +
+        '(select * from tasks where taskId >=' +
+        '(select min(taskId) from tasks where completed = 0)) as T',
+        '',
+        function (clientSocket, error, result) {
+            if (error) {
+                throw error;
+            }
+            var numTasks = Math.max(result[0].numTasks, MIN_DISPLAY_TASKS);
+            databaseOperation(
+                clientSocket,
+                'select * from (select * from tasks order by taskId desc limit ?) limited order by taskId',
+                [numTasks],
+                function (clientSocket, error, tasks) {
+                    if (error) {
+                        throw error;
+                    }
+                    clientSocket.emit('server-update', tasks);
+                }
+            );
+        }
+    );
+}
 
 function addTask(clientSocket, taskText, taskDate) {
     var task = {
@@ -72,7 +69,6 @@ function addTask(clientSocket, taskText, taskDate) {
         date: taskDate,
         completed: false
     };
-    console.log('Adding task with description "' + taskText + '"');
     databaseOperation(clientSocket, 'insert into tasks set ?', task, sendTasks);
 }
 
@@ -84,8 +80,6 @@ function alterCompleted(clientSocket, taskId, completed) {
 function removeTask(clientSocket, taskId) {
     databaseOperation(clientSocket, 'delete from tasks where taskId = ?', taskId, sendTasks);
 }
-
-
 
 // handle express logic
 // send index on request for '/'
@@ -100,70 +94,6 @@ app.use('/public', express.static(__dirname + '/public'));
 server.listen(port, function () {
     console.log('Started server on ' + port);
 });
-
-/**
- * A task is comprised of the following:
- * {
- *      taskId: integer,
- *      text: 'task text here',
- *      date: 'date when task was added',
- *      completed: boolean
- * }
- *
- * @type {Array}
- */
-// var tasks = [];
-
-// function alterCompleted(taskId, completed) {
-//     for (var i = 0; i < tasks.length; i++) {
-//         if (tasks[i].taskId == taskId) {
-//             tasks[i].completed = completed;
-//             return;
-//         }
-//     }
-// }
-
-// function addTask(taskText, taskDate) {
-//     var taskId = 1;
-//     if (tasks.length) {
-//         taskId = tasks[tasks.length - 1].taskId + 1;
-//     }
-//     tasks.push({
-//         taskId: taskId,
-//         text: taskText,
-//         date: taskDate,
-//         completed: false
-//     });
-//     console.log('Adding task ' + taskId + ' with description '' + taskText + ''');
-// }
-
-// function removeTask(taskId) {
-//     for (var i = 0; i < tasks.length; i++) {
-//         if (tasks[i].taskId == taskId) {
-//             // remove the matching task
-//             tasks.splice(i, 1);
-//             return;
-//         }
-//     }
-// }
-
-// function getDisplayTasks() {
-//     var maxTasks = 18;
-//     if (tasks.length <= maxTasks) {
-//         return tasks;
-//     }
-//
-//     // find least recent
-//     var leastRecentTaskIndex = 0;
-//     for (var i = 0; i < tasks.length; i++) {
-//         if (!tasks[i].completed) {
-//             leastRecentTaskIndex = i;
-//             break;
-//         }
-//     }
-//
-//     return tasks.slice(tasks.length - Math.max(maxTasks, leastRecentTaskIndex), tasks.length);
-// }
 
 // handle the socket connection
 io.on('connection', function (clientSocket) {
@@ -183,7 +113,6 @@ io.on('connection', function (clientSocket) {
 
     // when a task is added, update the array of tasks and broadcast an update to each client
     clientSocket.on('remove-task', function (taskId) {
-        console.log('Removing ' + taskId);
         removeTask(clientSocket, taskId);
     });
 
