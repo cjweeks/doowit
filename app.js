@@ -33,7 +33,7 @@ function databaseOperation(clientSocket, queryString, args, callback) {
     });
 }
 
-function sendTasks(clientSocket, error) {
+function sendDisplayTasks(clientSocket, error) {
     if (error) {
         throw error;
     }
@@ -56,29 +56,41 @@ function sendTasks(clientSocket, error) {
                     if (error) {
                         throw error;
                     }
-                    clientSocket.emit('server-update', tasks);
+                     .emit('server-update', tasks);
                 }
             );
         }
     );
 }
 
-function addTask(clientSocket, taskText, taskDate) {
+function sendAllTasks(clientSocket, error) {
+    if (error) {
+        throw error;
+    }
+    databaseOperation(clientSocket, 'select * from tasks', '', function (clientSocket, error, tasks) {
+        if (error) {
+            throw error;
+        }
+        clientSocket.emit('server-update', tasks);
+    });
+}
+
+function addTask(clientSocket, taskText, taskDate, callback) {
     var task = {
         text: taskText,
         date: taskDate,
         completed: false
     };
-    databaseOperation(clientSocket, 'insert into tasks set ?', task, sendTasks);
+    databaseOperation(clientSocket, 'insert into tasks set ?', task, callback);
 }
 
-function alterCompleted(clientSocket, taskId, completed) {
+function alterCompleted(clientSocket, taskId, completed, callback) {
     completed = completed ? 1 : 0;
-    databaseOperation(clientSocket, 'update tasks set completed = ? where taskId = ?', [completed, taskId], sendTasks);
+    databaseOperation(clientSocket, 'update tasks set completed = ? where taskId = ?', [completed, taskId], callback);
 }
 
-function removeTask(clientSocket, taskId) {
-    databaseOperation(clientSocket, 'delete from tasks where taskId = ?', taskId, sendTasks);
+function removeTask(clientSocket, taskId, callback) {
+    databaseOperation(clientSocket, 'delete from tasks where taskId = ?', taskId, callback);
 }
 
 // handle express logic
@@ -96,27 +108,30 @@ server.listen(port, function () {
 });
 
 // handle the socket connection
+// TODO surround each operation with try / catch blocks
 io.on('connection', function (clientSocket) {
-    // send an initial task list
 
-    sendTasks(clientSocket);
     // send the array of posts to the client who requested it
-    clientSocket.on('get-tasks', function() {
-        sendTasks(clientSocket);
+    clientSocket.on('get-display-tasks', function() {
+        sendDisplayTasks(clientSocket);
+    });
+
+    // send the array of posts to the client who requested it
+    clientSocket.on('get-all-tasks', function() {
+        sendAllTasks(clientSocket);
     });
 
     // when a task is added, update the array of tasks and broadcast an update to each client
     clientSocket.on('add-task', function (data) {
-        addTask(clientSocket, data.text, data.date);
-
+        addTask(clientSocket, data.text, data.date, sendDisplayTasks);
     });
 
     // when a task is added, update the array of tasks and broadcast an update to each client
     clientSocket.on('remove-task', function (taskId) {
-        removeTask(clientSocket, taskId);
+        removeTask(clientSocket, taskId, sendDisplayTasks);
     });
 
     clientSocket.on('alter-completed', function (data) {
-        alterCompleted(clientSocket, data.taskId, data.completed);
+        alterCompleted(clientSocket, data.taskId, data.completed, sendDisplayTasks);
     });
 });

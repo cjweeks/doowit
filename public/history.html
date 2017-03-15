@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Doowit Home</title>
+    <title>Doowit History</title>
 
     <!-- jQuery library -->
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
@@ -28,10 +28,9 @@
 
     <!-- scripts, fonts, and style -->
     <script src="/public/common.js"></script>
-    <script src="/public/index.js"></script>
+    <script src="/public/history.js"></script>
     <link href="https://fonts.googleapis.com/css?family=Flamenco:300,400|Josefin+Sans" rel="stylesheet">
     <link href="/public/style.css" rel="stylesheet" type="text/css">
-
 
 </head>
 <body>
@@ -47,15 +46,15 @@
         </div>
         <div class="collapse navbar-collapse" id="navbar">
             <ul class="nav navbar-nav">
-                <li class="active"><a href="#">Home</a></li>
-                <li><a href="/public/history.html">History</a></li>
+                <li><a href="/">Home</a></li>
+                <li class="active"><a href="#">History</a></li>
                 <li><a href="#">Settings</a></li>
             </ul>
         </div>
     </div>
 </nav>
 <div class="container-fluid">
-    <h1 id="title">Doowit</h1>
+    <h1 id="title">History</h1>
     <div class="row">
         <div class="col-sm-3"></div>
         <div class="col-sm-6">
@@ -70,7 +69,6 @@
     <div class="row">
         <div class="col-sm-3"></div>
         <div class="col-sm-6" id="posts">
-
             <ul class="list-group" id="tasks">
             </ul>
         </div>
@@ -80,42 +78,6 @@
         <div class="col-sm-3"></div>
         <div class="col-sm-6" id="settings"></div>
         <div class="col-sm-3"></div>
-    </div>
-</div>
-
-<!-- Add TaskModal -->
-<div class="modal fade" id="add-task-modal" tabindex="-1" role="dialog" aria-labelledby="add-task-modal-label" aria-hidden="true">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <!-- Modal Header -->
-            <div class="modal-header">
-                <button type="button" class="close" data-dismiss="modal">
-                    <span aria-hidden="true">&times;</span>
-                    <span class="sr-only">Close</span>
-                </button>
-                <h4 class="modal-title" id="add-task-modal-label">
-                    Add Task
-                </h4>
-            </div>
-
-            <!-- Modal Body -->
-            <div class="modal-body">
-                <form role="form">
-                    <div class="form-group">
-                        <input type="text" class="form-control" autofocus id="task-description" placeholder="Task description"/>
-                    </div>
-                    <div class="checkbox">
-                        <label><input type="checkbox" value="" checked id="keep-modal-open">Keep this window open</label>
-                    </div>
-                    <button type="submit" class="btn btn-default" id="add-task-submit-btn">Add</button>
-                    <!--<button type="submit" class="btn btn-default btn-block" id="add-task-submit-btn">Add</button>-->
-                </form>
-            </div>
-
-            <!--<div class="modal-footer">-->
-                <!--<button type="button" class="btn btn-default">Exit</button>-->
-            <!--</div>-->
-        </div>
     </div>
 </div>
 </body>

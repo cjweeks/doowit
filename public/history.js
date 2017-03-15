@@ -15,6 +15,7 @@ $(document).ready(function () {
     });
 
     $('#add-task-modal').on('shown.bs.modal', function() {
+        console.log('focusing...');
         $('#task-description').focus();
     });
 
@@ -28,6 +29,7 @@ $(document).ready(function () {
             date: new Date().yyyymmdd()
         });
         document.getElementById('task-description').value = '';
+
         if (!$('#keep-modal-open').checked) {
             $('#add-task-modal').modal('hide');
         }
@@ -35,20 +37,26 @@ $(document).ready(function () {
 
     var tasks = $('#tasks');
 
-    // add listener for removing a task
+    // send post request for new song
     tasks.on('click', '.remove-task-btn', function(event) {
+        console.log('got click');
         var taskIdString = $(this).closest('li').attr('id');
         var taskId = parseInt(taskIdString);
+        console.log(taskId);
         if (taskId) {
             socket.emit('remove-task', taskId);
         }
     });
 
-    // add listener for adding a task
+    // send post request for new song
     tasks.on('click', '.check-label', function(event) {
+
         var state = $(this).closest('label').hasClass('active');
+        console.log('got click for check; state is ' + state);
+
         var taskIdString = $(this).closest('li').attr('id');
         var taskId = parseInt(taskIdString);
+        console.log(taskId);
         if (taskId) {
             socket.emit('alter-completed', {
                 taskId: taskId,
@@ -68,7 +76,7 @@ $(document).ready(function () {
         }
     });
 
-
     // request initial set of tasks
-    socket.emit('get-display-tasks');
+    socket.emit('get-all-tasks');
+
 });
