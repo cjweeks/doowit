@@ -56,7 +56,7 @@ function sendDisplayTasks(clientSocket, error) {
                     if (error) {
                         throw error;
                     }
-                     .emit('server-update', tasks);
+                    clientSocket.emit('server-update', tasks);
                 }
             );
         }
